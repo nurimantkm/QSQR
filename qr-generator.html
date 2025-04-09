@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnTalk QR Code Generator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 20px;
+        }
+        .qr-container {
+            text-align: center;
+            margin: 20px 0;
+        }
+        #qrcode {
+            display: inline-block;
+            margin: 20px auto;
+        }
+        .qr-instructions {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        .event-select {
+            max-width: 600px;
+            margin: 20px auto;
+        }
+        .download-btn {
+            margin-top: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center mb-4">EnTalk QR Code Generator</h1>
+        
+        <div class="alert alert-info qr-instructions">
+            <h5><i class="fas fa-info-circle me-2"></i>How to use</h5>
+            <p>Generate a QR code for your EnTalk event. When participants scan this code, they'll be taken directly to the conversation questions for your event.</p>
+        </div>
+        
+        <div class="card event-select">
+            <div class="card-body">
+                <h5 class="card-title">Select Event</h5>
+                <div class="mb-3">
+                    <label for="event-selector" class="form-label">Choose an event:</label>
+                    <select class="form-select" id="event-selector">
+                        <option value="" selected disabled>Select an event...</option>
+                        <!-- Events will be populated dynamically -->
+                    </select>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="base-url" class="form-label">Participant URL base:</label>
+                    <input type="text" class="form-control" id="base-url" value="https://yourdomain.com/participant.html?event=" />
+                    <div class="form-text">This is the base URL where your participant experience is hosted.</div>
+                </div>
+                
+                <button id="generate-qr-btn" class="btn btn-primary w-100">Generate QR Code</button>
+            </div>
+        </div>
+        
+        <div class="qr-container d-none" id="qr-result">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">QR Code for <span id="event-name">Event</span></h5>
+                    <div id="qrcode"></div>
+                    <p class="card-text">Scan this code to access conversation questions for this event.</p>
+                    <p class="card-text"><small class="text-muted">URL: <span id="event-url"></span></small></p>
+                    <button id="download-qr-btn" class="btn btn-success download-btn">
+                        <i class="fas fa-download me-2"></i>Download QR Code
+                    </button>
+                    <button id="print-qr-btn" class="btn btn-secondary download-btn ms-2">
+                        <i class="fas fa-print me-2"></i>Print QR Code
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample events (in a real implementation, these would come from your API)
+        const sampleEvents = [
+            { id: 'event1', title: 'Weekly English Conversation - Coffee Brew', date: '2025-04-15' },
+            { id: 'event2', title: 'Business English Practice - Work Cafe', date: '2025-04-17' },
+            { id: 'event3', title: 'Travel English - Kadıköy', date: '2025-04-20' },
+            { id: 'event4', title: 'Beginner Friendly Chat - Beşiktaş', date: '2025-04-22' }
+        ];
+        
+        // Populate event selector
+        function populateEvents() {
+            const selector = document.getElementById('event-selector');
+            
+            sampleEvents.forEach(event => {
+                const option = document.createElement('option');
+                option.value = event.id;
+                option.textContent = `${event.title} (${event.date})`;
+                selector.appendChild(option);
+            });
+        }
+        
+        // Generate QR code
+        function generateQRCode() {
+            const eventSelector = document.getElementById('event-selector');
+            const baseUrl = document.getElementById('base-url').value;
+            
+            if (!eventSelector.value) {
+                alert('Please select an event');
+                return;
+            }
+            
+            const eventId = eventSelector.value;
+            const eventUrl = baseUrl + eventId;
+            const eventName = eventSelector.options[eventSelector.selectedIndex].text;
+            
+            // Show QR container
+            document.getElementById('qr-result').classList.remove('d-none');
+            
+            // Set event name and URL
+            document.getElementById('event-name').textContent = eventName;
+            document.getElementById('event-url').textContent = eventUrl;
+            
+            // Clear previous QR code
+            document.getElementById('qrcode').innerHTML = '';
+            
+            // Generate QR code
+            QRCode.toCanvas(document.getElementById('qrcode'), eventUrl, {
+                width: 250,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#ffffff'
+                }
+            }, function(error) {
+                if (error) console.error(error);
+            });
+        }
+        
+        // Download QR code
+        function downloadQRCode() {
+            const canvas = document.querySelector('#qrcode canvas');
+            const eventName = document.getElementById('event-name').textContent;
+            const sanitizedName = eventName.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            
+            if (canvas) {
+                const link = document.createElement('a');
+                link.download = `entalk_qr_${sanitizedName}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            }
+        }
+        
+        // Print QR code
+        function printQRCode() {
+            const qrContainer = document.getElementById('qr-result');
+            const eventName = document.getElementById('event-name').textContent;
+            
+            const printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                <head>
+                    <title>EnTalk QR Code - ${eventName}</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+                        h1 { margin-bottom: 20px; }
+                        .qr-container { margin: 30px auto; }
+                        .instructions { margin-top: 30px; border-top: 1px solid #ccc; padding-top: 20px; }
+                    </style>
+                </head>
+                <body>
+                    <h1>EnTalk Conversation Questions</h1>
+                    <h2>${eventName}</h2>
+                    <div class="qr-container">
+                        ${document.getElementById('qrcode').innerHTML}
+                    </div>
+                    <p>Scan this QR code to access conversation questions for this event.</p>
+                    <div class="instructions">
+                        <h3>Instructions for Participants:</h3>
+                        <p>1. Open your phone's camera app</p>
+                        <p>2. Point it at this QR code</p>
+                        <p>3. Tap the notification that appears</p>
+                        <p>4. Swipe left or right on questions to navigate</p>
+                    </div>
+                </body>
+                </html>
+            `);
+            printWindow.document.close();
+            setTimeout(() => {
+                printWindow.print();
+            }, 500);
+        }
+        
+        // Set up event listeners
+        document.addEventListener('DOMContentLoaded', () => {
+            populateEvents();
+            
+            document.getElementById('generate-qr-btn').addEventListener('click', generateQRCode);
+            document.getElementById('download-qr-btn').addEventListener('click', downloadQRCode);
+            document.getElementById('print-qr-btn').addEventListener('click', printQRCode);
+        });
+    </script>
+</body>
+</html>

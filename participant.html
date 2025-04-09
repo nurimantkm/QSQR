@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EnTalk Questions</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/participant.css">
+</head>
+<body>
+    <!-- Question Card Container -->
+    <div id="question-container" class="question-container">
+        <!-- Loading State -->
+        <div id="loading-container" class="loading-container">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading questions...</span>
+            </div>
+            <p class="mt-3">Loading conversation questions...</p>
+        </div>
+
+        <!-- Question Cards will be inserted here -->
+    </div>
+
+    <!-- Swipe Instructions (shown initially) -->
+    <div id="swipe-instructions" class="swipe-instructions">
+        <div class="instruction-content">
+            <h3>How to use</h3>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div class="text-center">
+                    <i class="fas fa-times-circle instruction-icon text-danger"></i>
+                    <p>Swipe left if you don't like a question</p>
+                </div>
+                <div class="text-center">
+                    <i class="fas fa-check-circle instruction-icon text-success"></i>
+                    <p>Swipe right if you like a question</p>
+                </div>
+            </div>
+            <button id="start-questions-btn" class="btn btn-primary btn-lg w-100">Start Conversation</button>
+        </div>
+    </div>
+
+    <!-- Feedback Form (hidden initially) -->
+    <div id="feedback-container" class="feedback-container d-none">
+        <div class="feedback-content">
+            <h2>Thanks for participating!</h2>
+            <p>Please share your feedback to help improve future conversations.</p>
+            
+            <form id="feedback-form">
+                <div class="mb-3">
+                    <label for="new-words" class="form-label">Did you learn any new words or expressions today?</label>
+                    <textarea class="form-control" id="new-words" rows="2" placeholder="Share what you learned..."></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">How would you rate the conversation questions?</label>
+                    <div class="rating-container">
+                        <div class="rating">
+                            <input type="radio" id="star5" name="rating" value="5" /><label for="star5"></label>
+                            <input type="radio" id="star4" name="rating" value="4" /><label for="star4"></label>
+                            <input type="radio" id="star3" name="rating" value="3" /><label for="star3"></label>
+                            <input type="radio" id="star2" name="rating" value="2" /><label for="star2"></label>
+                            <input type="radio" id="star1" name="rating" value="1" /><label for="star1"></label>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="feedback-comments" class="form-label">Any other comments?</label>
+                    <textarea class="form-control" id="feedback-comments" rows="2" placeholder="Share your thoughts..."></textarea>
+                </div>
+                
+                <button type="submit" class="btn btn-primary btn-lg w-100">Submit Feedback</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Thank You Message (hidden initially) -->
+    <div id="thank-you-container" class="thank-you-container d-none">
+        <div class="thank-you-content text-center">
+            <i class="fas fa-check-circle thank-you-icon"></i>
+            <h2>Thank You!</h2>
+            <p>Your feedback has been submitted successfully.</p>
+            <p>We hope you enjoyed the conversation!</p>
+            <div class="mt-4">
+                <p class="mb-1">Follow EnTalk:</p>
+                <div class="social-icons">
+                    <a href="#" class="social-icon"><i class="fab fa-instagram"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-facebook"></i></a>
+                    <a href="#" class="social-icon"><i class="fab fa-twitter"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Question Card Template (hidden) -->
+    <template id="question-card-template">
+        <div class="question-card">
+            <div class="question-content">
+                <h2 class="question-text">What is the most interesting place you have traveled to and what made it special?</h2>
+                <p class="question-follow-up">Would you like to go back there someday?</p>
+                <div class="difficulty-badge">Intermediate</div>
+            </div>
+            <div class="swipe-indicators">
+                <div class="swipe-left">
+                    <i class="fas fa-times-circle"></i>
+                    <span>Skip</span>
+                </div>
+                <div class="swipe-right">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Like</span>
+                </div>
+            </div>
+        </div>
+    </template>
+
+    <!-- No More Questions Template (hidden) -->
+    <template id="no-more-questions-template">
+        <div class="question-card no-more-card">
+            <div class="question-content text-center">
+                <i class="fas fa-comments no-more-icon"></i>
+                <h2>No More Questions</h2>
+                <p>You've gone through all the questions for this event.</p>
+                <button id="show-feedback-btn" class="btn btn-primary btn-lg mt-3">Share Your Feedback</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Error Card Template (hidden) -->
+    <template id="error-card-template">
+        <div class="question-card error-card">
+            <div class="question-content text-center">
+                <i class="fas fa-exclamation-triangle error-icon"></i>
+                <h2>Oops! Something went wrong</h2>
+                <p>We couldn't load questions for this event.</p>
+                <button id="retry-btn" class="btn btn-primary btn-lg mt-3">Try Again</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/hammer@2.0.8/hammer.min.js"></script>
+    <script src="js/participant-api.js"></script>
+    <script src="js/participant.js"></script>
+</body>
+</html>
