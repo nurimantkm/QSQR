@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profile - EnTalk Questions Tool</title>
+    <link rel="stylesheet" href="css/styles.css">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">EnTalk Questions Tool</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="events.html">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="questions.html">Questions</a>
+                    </li>
+                </ul>
+                <div class="d-none" id="user-profile">
+                    <div class="dropdown">
+                        <button class="btn btn-light dropdown-toggle" type="button" id="profileDropdown" data-bs-toggle="dropdown">
+                            <span id="username">User</span>
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item active" href="profile.html">Profile</a></li>
+                            <li><a class="dropdown-item" href="#" id="logout-btn">Logout</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-4">
+        <div class="row">
+            <div class="col-lg-4">
+                <!-- User Profile Card -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Your Profile</h5>
+                    </div>
+                    <div class="card-body text-center">
+                        <div class="mb-3">
+                            <div class="avatar-circle mx-auto">
+                                <span class="avatar-initials" id="user-initials">JD</span>
+                            </div>
+                        </div>
+                        <h4 id="profile-name">John Doe</h4>
+                        <p class="text-muted" id="profile-email">john.doe@example.com</p>
+                        <div class="d-grid gap-2">
+                            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+                                <i class="fas fa-edit me-2"></i>Edit Profile
+                            </button>
+                            <button class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#changePasswordModal">
+                                <i class="fas fa-key me-2"></i>Change Password
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Account Statistics -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Account Statistics</h5>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Member Since
+                                <span id="member-since">April 1, 2025</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Events Attended
+                                <span class="badge bg-primary rounded-pill" id="events-attended">12</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Events Hosted
+                                <span class="badge bg-primary rounded-pill" id="events-hosted">3</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Question Sets Created
+                                <span class="badge bg-primary rounded-pill" id="question-sets-created">8</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-8">
+                <!-- Upcoming Events -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Your Upcoming Events</h5>
+                        <a href="events.html" class="btn btn-sm btn-outline-primary">View All Events</a>
+                    </div>
+                    <div class="card-body">
+                        <div id="upcoming-events-container">
+                            <!-- Events will be loaded here -->
+                            <div class="text-center py-4" id="upcoming-events-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading your events...</p>
+                            </div>
+                            <div id="upcoming-events-list" class="d-none">
+                                <!-- Event items will be inserted here -->
+                            </div>
+                            <div id="no-upcoming-events" class="text-center py-4 d-none">
+                                <i class="fas fa-calendar-times fa-2x text-muted mb-3"></i>
+                                <p>You don't have any upcoming events</p>
+                                <a href="events.html" class="btn btn-primary">Browse Events</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Recent Question Sets -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">Your Recent Question Sets</h5>
+                        <a href="questions.html" class="btn btn-sm btn-outline-primary">Generate Questions</a>
+                    </div>
+                    <div class="card-body">
+                        <div id="recent-questions-container">
+                            <!-- Question sets will be loaded here -->
+                            <div class="text-center py-4" id="recent-questions-loading">
+                                <div class="spinner-border text-primary" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                                <p class="mt-2">Loading your question sets...</p>
+                            </div>
+                            <div id="recent-questions-list" class="d-none">
+                                <!-- Question set items will be inserted here -->
+                            </div>
+                            <div id="no-recent-questions" class="text-center py-4 d-none">
+                                <i class="fas fa-comments fa-2x text-muted mb-3"></i>
+                                <p>You haven't created any question sets yet</p>
+                                <a href="questions.html" class="btn btn-primary">Generate Questions</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- User Activity -->
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Activity</h5>
+                    </div>
+                    <div class="card-body">
+                        <div id="user-activity-container">
+                            <ul class="list-group list-group-flush" id="activity-list">
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Registered for "Weekly English Conversation"</h6>
+                                        <small class="text-muted">3 days ago</small>
+                                    </div>
+                                    <p class="mb-1">You registered for an event on April 10, 2025.</p>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Created "Travel Discussion" question set</h6>
+                                        <small class="text-muted">5 days ago</small>
+                                    </div>
+                                    <p class="mb-1">You created a new set with 10 questions.</p>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">Attended "Business English Practice"</h6>
+                                        <small class="text-muted">1 week ago</small>
+                                    </div>
+                                    <p class="mb-1">You attended an event at Work Cafe, Levent.</p>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Edit Profile Modal -->
+    <div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Edit Profile</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="edit-profile-form">
+                        <div class="mb-3">
+                            <label for="edit-name" class="form-label">Full Name</label>
+                            <input type="text" class="form-control" id="edit-name" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-email" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="edit-email" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-language-level" class="form-label">English Level</label>
+                            <select class="form-select" id="edit-language-level">
+                                <option value="beginner">Beginner</option>
+                                <option value="intermediate">Intermediate</option>
+                                <option value="advanced">Advanced</option>
+                                <option value="native">Native Speaker</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit-bio" class="form-label">Bio (optional)</label>
+                            <textarea class="form-control" id="edit-bio" rows="3"></textarea>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-profile-btn">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Change Password Modal -->
+    <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Change Password</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="change-password-form">
+                        <div class="mb-3">
+                            <label for="current-password" class="form-label">Current Password</label>
+                            <input type="password" class="form-control" id="current-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="new-password" class="form-label">New Password</label>
+                            <input type="password" class="form-control" id="new-password" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="confirm-password" class="form-label">Confirm New Password</label>
+                            <input type="password" class="form-control" id="confirm-password" required>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="save-password-btn">Change Password</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-white mt-5 py-4">
+        <div class="container text-center">
+            <p>© 2025 EnTalk Questions Tool. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- App JS -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/profile.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
